@@ -1,4 +1,4 @@
-import { Schema, model } from "../config";
+import { Schema, model } from "mongoose";
 
 const roomSchema = new Schema({
   name: {
