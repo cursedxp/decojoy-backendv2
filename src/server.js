@@ -1,4 +1,5 @@
-import { app, dotenv, mongoose } from "./config/index.js";
+import app from "./app.js";
+import { dotenv, mongoose } from "./config/index.js";
 dotenv.config();
 
 const startServer = async () => {
