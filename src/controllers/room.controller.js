@@ -1,3 +1,4 @@
+import { mongoose } from "../config/index.js";
 import { Room } from "../models/index.js";
 
 // Get all rooms
@@ -11,8 +12,9 @@ const getRooms = async (req, res) => {
 };
 // Get a single room
 const getRoom = async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).json({ message: "No room with that id" });
   try {
-    const { id } = req.params;
     const room = await Room.findById(id);
     res.status(200).json(room);
   } catch (error) {
@@ -33,8 +35,10 @@ const createRoom = async (req, res) => {
 
 // Update a room
 const updateRoom = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).json({ message: "No room with that id" });
   try {
-    const { id } = req.params;
     const { name } = req.body;
     const updatedRoom = await Room.findByIdAndUpdate(
       id,
@@ -48,8 +52,11 @@ const updateRoom = async (req, res) => {
 };
 // Delete a room
 const deleteRoom = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).json({ message: "No room with that id" });
+
   try {
-    const { id } = req.params;
     await Room.findByIdAndDelete(id);
     res.status(200).json({ message: "Room has been deleted" });
   } catch (error) {
