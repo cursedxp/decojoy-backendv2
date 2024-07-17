@@ -1,9 +1,9 @@
-import Room from "../models/index.js";
+import { Room } from "../models/index.js";
 
 // Get all rooms
 const getRooms = async (req, res) => {
   try {
-    const rooms = await Room.find().short({ createdAt: -1 });
+    const rooms = await Room.find().sort({ createdAt: -1 });
     res.status(200).json(rooms);
   } catch (error) {
     res.status(400).json({ message: error.message });
