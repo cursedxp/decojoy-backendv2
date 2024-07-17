@@ -2,7 +2,7 @@ import { mongoose } from "../config/index.js";
 import { Room } from "../models/index.js";
 
 // Get all rooms
-const getRooms = async (req, res) => {
+const getAllRooms = async (req, res) => {
   try {
     const rooms = await Room.find().sort({ createdAt: -1 });
     res.status(200).json(rooms);
@@ -64,4 +64,4 @@ const deleteRoom = async (req, res) => {
   }
 };
 
-export { createRoom, getRooms, getRoom, updateRoom, deleteRoom };
+export { createRoom, getAllRooms, getRoom, updateRoom, deleteRoom };

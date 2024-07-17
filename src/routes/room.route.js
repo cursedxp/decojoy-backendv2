@@ -3,7 +3,7 @@ import { roomController } from "../controllers/index.js";
 const router = Router();
 
 // Get all rooms
-router.get("/", roomController.getRooms);
+router.get("/", roomController.getAllRooms);
 
 // Create a room
 router.post("/", roomController.createRoom);
