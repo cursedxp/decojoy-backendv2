@@ -1,26 +1,21 @@
 import { Router } from "express";
-import Room from "../models/index.js";
-import {
-  createRoom,
-  deleteRoom,
-  getRoom,
-  getRooms,
-  updateRoom,
-} from "../controllers/room.controller.js";
+import { roomController } from "../controllers/index.js"; // Named import kullanıyoruz
 
 const router = Router();
+
 // Get all rooms
-router.get("/", getRooms);
+router.get("/", roomController.getRooms);
 
 // Create a room
-router.post("/", createRoom);
+router.post("/", roomController.createRoom);
 
 // Get a single room
-router.get("/:id", getRoom);
+router.get("/:id", roomController.getRoom);
 
 // Update a room
-router.put("/:id", updateRoom);
+router.put("/:id", roomController.updateRoom);
 
-router.delete("/:id", deleteRoom);
+// Delete a room
+router.delete("/:id", roomController.deleteRoom);
 
 export default router;
