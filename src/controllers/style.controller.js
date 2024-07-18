@@ -20,6 +20,8 @@ const getStyle = async (req, res) => {
 
   try {
     const style = await Style.findById(id);
+    if (!style)
+      return res.status(404).json({ message: "No style with that id" });
     res.status(200).json(style);
   } catch (error) {
     res.status(400).json({ message: error.message });
