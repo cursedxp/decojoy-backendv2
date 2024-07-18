@@ -26,9 +26,9 @@ const getConceptById = async (req, res) => {
       .populate("roomType")
       .populate("roomStyle")
       .populate("products");
-    if (!concept) {
+    if (!concept)
       return res.status(404).json({ message: "Concept not found." });
-    }
+
     res.status(200).json(concept);
   } catch (error) {
     res.status(500).json({ message: error.message });

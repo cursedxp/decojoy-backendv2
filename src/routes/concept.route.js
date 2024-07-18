@@ -17,7 +17,6 @@ router.put("/:id", conceptController.updateConcept);
 
 //Delete a concept
 router.delete("/:id", conceptController.deleteConcept);
-export default router;
 
 //Add product to concept
 router.post("/:conceptId/products", conceptController.addProductToConcept);
@@ -27,3 +26,5 @@ router.delete(
   "/:conceptId/products",
   conceptController.removeProductFromConcept
 );
+
+export default router;
