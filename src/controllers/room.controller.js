@@ -16,6 +16,7 @@ const getRoom = async (req, res) => {
     return res.status(404).json({ message: "No room with that id" });
   try {
     const room = await Room.findById(id);
+    if (!room) return res.status(404).json({ message: "No room with that id" });
     res.status(200).json(room);
   } catch (error) {
     res.status(400).json({ message: error.message });
