@@ -42,6 +42,10 @@ const conceptSchema = new Schema({
       ref: "Product",
     },
   ],
+  published: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Concept = model("Concept", conceptSchema);
