@@ -7,7 +7,8 @@ const getAllConcepts = async (req, res) => {
     const concepts = await Concept.find()
       .populate("roomType")
       .populate("roomStyle")
-      .populate("products");
+      .populate("products")
+      .populate("status");
     res.status(200).json(concepts);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -25,7 +26,8 @@ const getConceptById = async (req, res) => {
     const concept = await Concept.findById(id)
       .populate("roomType")
       .populate("roomStyle")
-      .populate("products");
+      .populate("products")
+      .populate("published");
     if (!concept)
       return res.status(404).json({ message: "Concept not found." });
 
@@ -44,10 +46,29 @@ const createConcept = async (req, res) => {
     images,
     colors,
     like,
-    roomTypeId,
-    roomStyleId,
+    roomType,
+    roomStyle,
   } = req.body;
+
+  console.log("Request Body:", req.body);
+
   try {
+    if (!mongoose.Types.ObjectId.isValid(roomType)) {
+      return res.status(400).json({ message: "Invalid roomType ID." });
+    }
+    if (!mongoose.Types.ObjectId.isValid(roomStyle)) {
+      return res.status(400).json({ message: "Invalid roomStyle ID." });
+    }
+    const roomTypeExists = await mongoose.model("Room").findById(roomType);
+    const roomStyleExists = await mongoose.model("Style").findById(roomStyle);
+
+    if (!roomTypeExists) {
+      return res.status(404).json({ message: "roomType not found." });
+    }
+    if (!roomStyleExists) {
+      return res.status(404).json({ message: "roomStyle not found." });
+    }
+
     const newConcept = await Concept.create({
       title,
       overview,
@@ -55,12 +76,16 @@ const createConcept = async (req, res) => {
       images,
       colors,
       like,
-      roomType: roomTypeId,
-      roomStyle: roomStyleId,
+      roomType,
+      roomStyle,
       products: [],
     });
+
+    console.log("New Concept:", newConcept);
+
     res.status(201).json(newConcept);
   } catch (error) {
+    console.error("Error creating concept:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -74,8 +99,9 @@ const updateConcept = async (req, res) => {
     thumbnail,
     images,
     colors,
-    roomTypeId,
-    roomStyleId,
+    roomType,
+    roomStyle,
+    published,
   } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -91,8 +117,9 @@ const updateConcept = async (req, res) => {
         thumbnail,
         images,
         colors,
-        roomType: roomTypeId,
-        roomStyle: roomStyleId,
+        roomType,
+        roomStyle,
+        published,
       },
       {
         new: true,
