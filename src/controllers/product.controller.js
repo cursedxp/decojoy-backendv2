@@ -1,13 +1,32 @@
 import { Product } from "../models/index.js";
 import mongoose from "mongoose";
 
-// Get all products
+// Get all products with pagination
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.status(200).json(products);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const startIndex = (page - 1) * limit;
+
+    const totalProducts = await Product.countDocuments();
+
+    const products = await Product.find().skip(startIndex).limit(limit);
+
+    const paginationInfo = {
+      currentPage: page,
+      itemsPerPage: limit,
+      totalItems: totalProducts,
+      totalPages: Math.ceil(totalProducts / limit),
+      hasNextPage: startIndex + limit < totalProducts,
+      hasPrevPage: page > 1,
+    };
+
+    res.status(200).json({
+      products,
+      pagination: paginationInfo,
+    });
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
