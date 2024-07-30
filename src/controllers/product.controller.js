@@ -48,13 +48,26 @@ const getProductById = async (req, res) => {
 
 // Create a product
 const createProduct = async (req, res) => {
-  const { title, price, image, link } = req.body;
+  const {
+    title,
+    price,
+    image,
+    link,
+    description,
+    category,
+    colors,
+    published,
+  } = req.body;
   try {
     const newProduct = await Product.create({
       title,
       price,
       image,
       link,
+      description,
+      category,
+      colors,
+      published: published || false,
     });
     res.status(201).json(newProduct);
   } catch (error) {
@@ -63,19 +76,41 @@ const createProduct = async (req, res) => {
 };
 
 // Update a product
-
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { title, price, image, like, dimentions, link } = req.body;
+  const {
+    title,
+    price,
+    image,
+    like,
+    dimentions,
+    link,
+    description,
+    category,
+    colors,
+    published,
+  } = req.body;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({ message: "Invalid product id" });
   }
   try {
     const product = await Product.findByIdAndUpdate(
       id,
-      { title, price, image, like, dimentions, link },
+      {
+        title,
+        price,
+        image,
+        like,
+        dimentions,
+        link,
+        description,
+        category,
+        colors,
+        published,
+      },
       { new: true }
     );
+    if (!product) return res.status(404).send({ message: "Product not found" });
     res.status(200).json(product);
   } catch (error) {
     res.status(500).send({ message: error.message });
@@ -89,7 +124,9 @@ const deleteProduct = async (req, res) => {
     return res.status(400).send({ message: "Invalid product id" });
   }
   try {
-    await Product.findByIdAndDelete(id);
+    const deletedProduct = await Product.findByIdAndDelete(id);
+    if (!deletedProduct)
+      return res.status(404).send({ message: "Product not found" });
     res.status(200).json({ message: "Product has been deleted" });
   } catch (error) {
     res.status(500).send({ message: error.message });
