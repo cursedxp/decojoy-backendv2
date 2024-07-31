@@ -29,6 +29,38 @@ const getAllProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// Search product
+const searchProduct = async (req, res) => {
+  console.log("Search request received. Query:", req.query);
+
+  try {
+    const searchTerm = req.query.search ? req.query.search.trim() : "";
+    console.log("Search term received:", searchTerm);
+
+    if (!searchTerm) {
+      // Return an empty result if the search term is empty
+      return res.status(200).json({ products: [] });
+    }
+
+    const searchQuery = {
+      $or: [
+        { title: { $regex: searchTerm, $options: "i" } },
+        { description: { $regex: searchTerm, $options: "i" } },
+        { category: { $regex: searchTerm, $options: "i" } },
+      ],
+    };
+
+    console.log("MongoDB query:", JSON.stringify(searchQuery));
+
+    const products = await Product.find(searchQuery);
+    console.log("Products found:", products.length);
+
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error("Error in searchProduct:", error);
+    res.status(500).json({ message: error.message, stack: error.stack });
+  }
+};
 
 // Get a product by id
 const getProductById = async (req, res) => {
@@ -139,4 +171,5 @@ export {
   createProduct,
   updateProduct,
   deleteProduct,
+  searchProduct,
 };
