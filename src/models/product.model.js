@@ -11,9 +11,13 @@ const productSchema = new Schema(
       type: Number,
       required: false,
     },
-    image: {
+    thumbnail: {
       type: String,
-      required: true,
+      required: false,
+    },
+    images: {
+      type: [String],
+      required: false,
     },
     like: {
       type: Number,
