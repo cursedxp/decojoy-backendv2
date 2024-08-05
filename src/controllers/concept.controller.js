@@ -1,7 +1,7 @@
 import { Concept } from "../models/index.js";
 import mongoose from "mongoose";
 
-// Get all concepts
+// Get all concepts with pagination
 const getAllConcepts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -14,7 +14,7 @@ const getAllConcepts = async (req, res) => {
       .populate("roomType")
       .populate("roomStyle")
       .populate("products")
-      .populate("status")
+      .populate("published")
       .skip(startIndex)
       .limit(limit);
 
@@ -33,6 +33,37 @@ const getAllConcepts = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// Search concept
+const searchConcept = async (req, res) => {
+  try {
+    const searchTerm = req.query.search ? req.query.search.trim() : "";
+
+    if (!searchTerm) {
+      // Return an empty result if the search term is empty
+      return res.status(200).json({ concepts: [] });
+    }
+
+    const searchQuery = {
+      $or: [
+        { title: { $regex: searchTerm, $options: "i" } },
+        { overview: { $regex: searchTerm, $options: "i" } },
+        // Add more fields to search if needed
+      ],
+    };
+
+    const concepts = await Concept.find(searchQuery)
+      .populate("roomType")
+      .populate("roomStyle")
+      .populate("products")
+      .populate("published");
+
+    res.status(200).json({ concepts });
+  } catch (error) {
+    console.error("Error in searchConcept:", error);
+    res.status(500).json({ message: error.message, stack: error.stack });
   }
 };
 
@@ -238,4 +269,5 @@ export {
   deleteConcept,
   addProductToConcept,
   removeProductFromConcept,
+  searchConcept,
 };

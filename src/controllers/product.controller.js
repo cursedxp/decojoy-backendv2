@@ -31,11 +31,8 @@ const getAllProducts = async (req, res) => {
 };
 // Search product
 const searchProduct = async (req, res) => {
-  console.log("Search request received. Query:", req.query);
-
   try {
     const searchTerm = req.query.search ? req.query.search.trim() : "";
-    console.log("Search term received:", searchTerm);
 
     if (!searchTerm) {
       // Return an empty result if the search term is empty
@@ -50,10 +47,7 @@ const searchProduct = async (req, res) => {
       ],
     };
 
-    console.log("MongoDB query:", JSON.stringify(searchQuery));
-
     const products = await Product.find(searchQuery);
-    console.log("Products found:", products.length);
 
     res.status(200).json({ products });
   } catch (error) {
