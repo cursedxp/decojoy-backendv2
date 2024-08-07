@@ -49,7 +49,7 @@ const searchProduct = async (req, res) => {
 
     const products = await Product.find(searchQuery);
 
-    res.status(200).json({ products });
+    res.status(200).json(products);
   } catch (error) {
     console.error("Error in searchProduct:", error);
     res.status(500).json({ message: error.message, stack: error.stack });
