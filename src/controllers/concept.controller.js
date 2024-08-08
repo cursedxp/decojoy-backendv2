@@ -3,67 +3,54 @@ import mongoose from "mongoose";
 
 // Get all concepts with pagination
 const getAllConcepts = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const startIndex = (page - 1) * limit;
-
-    const totalConcepts = await Concept.countDocuments();
-
-    const concepts = await Concept.find()
-      .populate("roomType")
-      .populate("roomStyle")
-      .populate("products")
-      .populate("published")
-      .skip(startIndex)
-      .limit(limit);
-
-    const paginationInfo = {
-      currentPage: page,
-      itemsPerPage: limit,
-      totalItems: totalConcepts,
-      totalPages: Math.ceil(totalConcepts / limit),
-      hasNextPage: startIndex + limit < totalConcepts,
-      hasPrevPage: page > 1,
-    };
-
-    res.status(200).json({
-      concepts,
-      pagination: paginationInfo,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Search concept
-const searchConcept = async (req, res) => {
-  try {
-    const searchTerm = req.query.search ? req.query.search.trim() : "";
-
-    if (!searchTerm) {
-      // Return an empty result if the search term is empty
-      return res.status(200).json({ concepts: [] });
+  const all = req.query.all === "true";
+  if (all) {
+    try {
+      const concepts = await Concept.find()
+        .populate("roomType")
+        .populate("roomStyle")
+        .populate("products")
+        .populate("published");
+      res.status(200).json({
+        concepts,
+        pagination: null,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
+    return;
+  } else {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const startIndex = (page - 1) * limit;
 
-    const searchQuery = {
-      $or: [
-        { title: { $regex: searchTerm, $options: "i" } },
-        { overview: { $regex: searchTerm, $options: "i" } },
-        // Add more fields to search if needed
-      ],
-    };
+      const totalConcepts = await Concept.countDocuments();
 
-    const concepts = await Concept.find(searchQuery)
-      .populate("roomType")
-      .populate("roomStyle")
-      .populate("products")
-      .populate("published");
+      const concepts = await Concept.find()
+        .populate("roomType")
+        .populate("roomStyle")
+        .populate("products")
+        .populate("published")
+        .skip(startIndex)
+        .limit(limit);
 
-    res.status(200).json({ concepts });
-  } catch (error) {
-    console.error("Error in searchConcept:", error);
-    res.status(500).json({ message: error.message, stack: error.stack });
+      const paginationInfo = {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: totalConcepts,
+        totalPages: Math.ceil(totalConcepts / limit),
+        hasNextPage: startIndex + limit < totalConcepts,
+        hasPrevPage: page > 1,
+      };
+
+      res.status(200).json({
+        concepts,
+        pagination: paginationInfo,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
   }
 };
 
