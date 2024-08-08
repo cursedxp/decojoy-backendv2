@@ -3,9 +3,6 @@ import { conceptController } from "../controllers/index.js";
 
 const router = Router();
 
-//Get search concept
-router.get("/search", conceptController.searchConcept);
-
 //Get all concepts
 router.get("/", conceptController.getAllConcepts);
 
