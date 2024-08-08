@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 const productCategorySchema = new Schema(
   {
-    name: {
+    title: {
       type: String,
       required: true,
       unique: true,

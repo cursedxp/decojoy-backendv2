@@ -29,13 +29,13 @@ const getProductCategoryById = async (req, res) => {
 
 // Create a new product category
 const createProductCategory = async (req, res) => {
-  const { name } = req.body;
-  const productCategoryExists = await ProductCategory.findOne({ name });
+  const { title } = req.body;
+  const productCategoryExists = await ProductCategory.findOne({ title });
   if (productCategoryExists) {
     return res.status(400).send({ message: "Product category already exists" });
   }
   try {
-    const newProductCategory = await ProductCategory.create({ name });
+    const newProductCategory = await ProductCategory.create({ title });
     res.status(201).json(newProductCategory);
   } catch (error) {
     res.status(500).send({ message: error.message });
@@ -45,14 +45,14 @@ const createProductCategory = async (req, res) => {
 // Update a product category by id
 const updateProductCategory = async (req, res) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { title } = req.body;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({ message: "Invalid product category id" });
   }
   try {
     const updatedProductCategory = await ProductCategory.findByIdAndUpdate(
       id,
-      { name },
+      { title },
       { new: true }
     );
     res.status(200).json(updatedProductCategory);
