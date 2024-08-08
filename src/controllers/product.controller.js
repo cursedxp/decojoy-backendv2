@@ -29,32 +29,6 @@ const getAllProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-// Search product
-const searchProduct = async (req, res) => {
-  try {
-    const searchTerm = req.query.search ? req.query.search.trim() : "";
-
-    if (!searchTerm) {
-      // Return an empty result if the search term is empty
-      return res.status(200).json({ products: [] });
-    }
-
-    const searchQuery = {
-      $or: [
-        { title: { $regex: searchTerm, $options: "i" } },
-        { description: { $regex: searchTerm, $options: "i" } },
-        { category: { $regex: searchTerm, $options: "i" } },
-      ],
-    };
-
-    const products = await Product.find(searchQuery);
-
-    res.status(200).json(products);
-  } catch (error) {
-    console.error("Error in searchProduct:", error);
-    res.status(500).json({ message: error.message, stack: error.stack });
-  }
-};
 
 // Get a product by id
 const getProductById = async (req, res) => {
@@ -165,5 +139,4 @@ export {
   createProduct,
   updateProduct,
   deleteProduct,
-  searchProduct,
 };

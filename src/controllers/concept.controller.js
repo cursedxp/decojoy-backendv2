@@ -3,54 +3,36 @@ import mongoose from "mongoose";
 
 // Get all concepts with pagination
 const getAllConcepts = async (req, res) => {
-  const all = req.query.all === "true";
-  if (all) {
-    try {
-      const concepts = await Concept.find()
-        .populate("roomType")
-        .populate("roomStyle")
-        .populate("products")
-        .populate("published");
-      res.status(200).json({
-        concepts,
-        pagination: null,
-      });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-    return;
-  } else {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const startIndex = (page - 1) * limit;
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const startIndex = (page - 1) * limit;
 
-      const totalConcepts = await Concept.countDocuments();
+    const totalConcepts = await Concept.countDocuments();
 
-      const concepts = await Concept.find()
-        .populate("roomType")
-        .populate("roomStyle")
-        .populate("products")
-        .populate("published")
-        .skip(startIndex)
-        .limit(limit);
+    const concepts = await Concept.find()
+      .populate("roomType")
+      .populate("roomStyle")
+      .populate("products")
+      .populate("published")
+      .skip(startIndex)
+      .limit(limit);
 
-      const paginationInfo = {
-        currentPage: page,
-        itemsPerPage: limit,
-        totalItems: totalConcepts,
-        totalPages: Math.ceil(totalConcepts / limit),
-        hasNextPage: startIndex + limit < totalConcepts,
-        hasPrevPage: page > 1,
-      };
+    const paginationInfo = {
+      currentPage: page,
+      itemsPerPage: limit,
+      totalItems: totalConcepts,
+      totalPages: Math.ceil(totalConcepts / limit),
+      hasNextPage: startIndex + limit < totalConcepts,
+      hasPrevPage: page > 1,
+    };
 
-      res.status(200).json({
-        concepts,
-        pagination: paginationInfo,
-      });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
+    res.status(200).json({
+      concepts,
+      pagination: paginationInfo,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -256,5 +238,4 @@ export {
   deleteConcept,
   addProductToConcept,
   removeProductFromConcept,
-  searchConcept,
 };

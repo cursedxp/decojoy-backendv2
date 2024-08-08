@@ -2,8 +2,6 @@ import { Router } from "express";
 import { productController } from "../controllers/index.js";
 const router = Router();
 
-//Search products
-router.get("/search", productController.searchProduct);
 //Get all products
 router.get("/", productController.getAllProducts);
 
