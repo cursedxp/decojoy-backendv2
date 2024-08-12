@@ -23,7 +23,7 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
-    dimensions: {
+    dimentions: {
       type: String,
       required: false,
     },
