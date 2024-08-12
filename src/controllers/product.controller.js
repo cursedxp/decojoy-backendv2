@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 // Get all products with pagination
 const getAllProducts = async (req, res) => {
   try {
-    const all = req.query.all === "true"; // req.query.all doğru kontrol
+    const all = req.query.all === "true";
 
     if (all) {
       const products = await Product.find();

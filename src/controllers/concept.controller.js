@@ -4,33 +4,40 @@ import mongoose from "mongoose";
 // Get all concepts with pagination
 const getAllConcepts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const startIndex = (page - 1) * limit;
+    const all = req.query.all === "true";
 
-    const totalConcepts = await Concept.countDocuments();
+    if (all) {
+      const concepts = await Concept.find();
+      res.status(200).json(concepts);
+    } else {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const startIndex = (page - 1) * limit;
 
-    const concepts = await Concept.find()
-      .populate("roomType")
-      .populate("roomStyle")
-      .populate("products")
-      .populate("published")
-      .skip(startIndex)
-      .limit(limit);
+      const totalConcepts = await Concept.countDocuments();
 
-    const paginationInfo = {
-      currentPage: page,
-      itemsPerPage: limit,
-      totalItems: totalConcepts,
-      totalPages: Math.ceil(totalConcepts / limit),
-      hasNextPage: startIndex + limit < totalConcepts,
-      hasPrevPage: page > 1,
-    };
+      const concepts = await Concept.find()
+        .populate("roomType")
+        .populate("roomStyle")
+        .populate("products")
+        .populate("published")
+        .skip(startIndex)
+        .limit(limit);
 
-    res.status(200).json({
-      concepts,
-      pagination: paginationInfo,
-    });
+      const paginationInfo = {
+        currentPage: page,
+        itemsPerPage: limit,
+        totalItems: totalConcepts,
+        totalPages: Math.ceil(totalConcepts / limit),
+        hasNextPage: startIndex + limit < totalConcepts,
+        hasPrevPage: page > 1,
+      };
+
+      res.status(200).json({
+        concepts,
+        pagination: paginationInfo,
+      });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
