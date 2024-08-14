@@ -58,7 +58,9 @@ const createProduct = async (req, res) => {
   const {
     title,
     price,
-    image,
+    thumbnail,
+    images,
+    dimentions,
     link,
     description,
     category,
@@ -69,7 +71,9 @@ const createProduct = async (req, res) => {
     const newProduct = await Product.create({
       title,
       price,
-      image,
+      thumbnail,
+      images,
+      dimentions,
       link,
       description,
       category,
@@ -88,7 +92,8 @@ const updateProduct = async (req, res) => {
   const {
     title,
     price,
-    image,
+    thumbnail,
+    images,
     like,
     dimentions,
     link,
@@ -106,7 +111,8 @@ const updateProduct = async (req, res) => {
       {
         title,
         price,
-        image,
+        thumbnail,
+        images,
         like,
         dimentions,
         link,
