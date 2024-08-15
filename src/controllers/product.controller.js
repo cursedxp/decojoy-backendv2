@@ -1,4 +1,5 @@
-import { Product } from "../models/index.js";
+import { Product, Concept } from "../models/index.js";
+
 import mongoose from "mongoose";
 
 // Get all products with pagination
@@ -60,29 +61,57 @@ const createProduct = async (req, res) => {
     price,
     thumbnail,
     images,
-    dimentions,
+    dimensions,
     link,
     description,
     category,
     colors,
     published,
+    conceptId,
   } = req.body;
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const newProduct = await Product.create({
-      title,
-      price,
-      thumbnail,
-      images,
-      dimentions,
-      link,
-      description,
-      category,
-      colors,
-      published: published || false,
-    });
-    res.status(201).json(newProduct);
+    const newProduct = await Product.create(
+      [
+        {
+          title,
+          price,
+          thumbnail,
+          images,
+          dimensions,
+          link,
+          description,
+          category,
+          colors,
+          published: published || false,
+        },
+      ],
+      { session }
+    );
+
+    if (conceptId && mongoose.Types.ObjectId.isValid(conceptId)) {
+      const concept = await Concept.findById(conceptId).session(session);
+      if (!concept) {
+        throw new Error("Concept not found");
+      }
+      concept.products.push(newProduct[0]._id);
+      await concept.save({ session });
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json(newProduct[0]);
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Error creating product:", error);
+    res.status(500).json({
+      message: error.message || "An error occurred while creating the product.",
+    });
   }
 };
 
