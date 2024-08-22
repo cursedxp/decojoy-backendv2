@@ -4,15 +4,20 @@ import mongoose from "mongoose";
 // Get all concepts with pagination
 const getAllConcepts = async (req, res) => {
   try {
-    const { all, page = 1, limit = 10, published = false } = req.query;
+    const { all, page = 1, limit = 10, published } = req.query;
     const parsedPage = parseInt(page);
     const parsedLimit = parseInt(limit);
     const startIndex = (parsedPage - 1) * parsedLimit;
 
     let query = {};
+
+    // Add filter for published status if specified
     if (published === "true") {
       query.published = true;
+    } else if (published === "false") {
+      query.published = false;
     }
+    // If published is not specified, query remains empty, returning all products
 
     if (all === "true") {
       const concepts = await Concept.find(query);
