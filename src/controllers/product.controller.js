@@ -5,34 +5,39 @@ import mongoose from "mongoose";
 // Get all products with pagination
 const getAllProducts = async (req, res) => {
   try {
-    const all = req.query.all === "true";
+    const { all, published = false, page = 1, limit = 10 } = req.query;
+    const parsedPage = parseInt(page);
+    const parsedLimit = parseInt(limit);
+    const startIndex = (parsedPage - 1) * parsedLimit;
 
-    if (all) {
+    let query = {};
+    if (published === "true") {
+      query.published = true;
+    }
+
+    if (all === "true") {
       const products = await Product.find();
       return res.status(200).json(products);
-    } else {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const startIndex = (page - 1) * limit;
-
-      const totalProducts = await Product.countDocuments();
-
-      const products = await Product.find().skip(startIndex).limit(limit);
-
-      const paginationInfo = {
-        currentPage: page,
-        itemsPerPage: limit,
-        totalItems: totalProducts,
-        totalPages: Math.ceil(totalProducts / limit),
-        hasNextPage: startIndex + limit < totalProducts,
-        hasPrevPage: page > 1,
-      };
-
-      res.status(200).json({
-        products,
-        pagination: paginationInfo,
-      });
     }
+
+    const totalProducts = await Product.countDocuments(query);
+    const products = await Product.find(query)
+      .skip(startIndex)
+      .limit(parsedLimit);
+
+    const paginationInfo = {
+      currentPage: parsedPage,
+      itemsPerPage: parsedLimit,
+      totalItems: totalProducts,
+      totalPages: Math.ceil(totalProducts / parsedLimit),
+      hasNextPage: startIndex + parsedLimit < totalProducts,
+      hasPrevPage: parsedPage > 1,
+    };
+
+    res.status(200).json({
+      products,
+      pagination: paginationInfo,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -4,39 +4,40 @@ import mongoose from "mongoose";
 // Get all concepts with pagination
 const getAllConcepts = async (req, res) => {
   try {
-    const all = req.query.all === "true";
+    const { all, page = 1, limit = 10, published = false } = req.query;
+    const parsedPage = parseInt(page);
+    const parsedLimit = parseInt(limit);
+    const startIndex = (parsedPage - 1) * parsedLimit;
 
-    if (all) {
-      const concepts = await Concept.find();
-      res.status(200).json(concepts);
-    } else {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const startIndex = (page - 1) * limit;
-
-      const totalConcepts = await Concept.countDocuments();
-
-      const concepts = await Concept.find({ published: true })
-        .populate("roomType")
-        .populate("roomStyle")
-        .populate("products")
-        .skip(startIndex)
-        .limit(limit);
-
-      const paginationInfo = {
-        currentPage: page,
-        itemsPerPage: limit,
-        totalItems: totalConcepts,
-        totalPages: Math.ceil(totalConcepts / limit),
-        hasNextPage: startIndex + limit < totalConcepts,
-        hasPrevPage: page > 1,
-      };
-
-      res.status(200).json({
-        concepts,
-        pagination: paginationInfo,
-      });
+    let query = {};
+    if (published === "true") {
+      query.published = true;
     }
+
+    if (all === "true") {
+      const concepts = await Concept.find(query);
+      return res.status(200).json(concepts);
+    }
+
+    const totalConcepts = await Concept.countDocuments(query);
+
+    const concepts = await Concept.find(query)
+      .skip(startIndex)
+      .limit(parsedLimit);
+
+    const paginationInfo = {
+      currentPage: parsedPage,
+      itemsPerPage: parsedLimit,
+      totalItems: totalConcepts,
+      totalPages: Math.ceil(totalConcepts / parsedLimit),
+      hasNextPage: startIndex + parsedLimit < totalConcepts,
+      hasPrevPage: parsedPage > 1,
+    };
+
+    res.status(200).json({
+      concepts,
+      pagination: paginationInfo,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
