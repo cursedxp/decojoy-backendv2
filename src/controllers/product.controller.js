@@ -5,18 +5,23 @@ import mongoose from "mongoose";
 // Get all products with pagination
 const getAllProducts = async (req, res) => {
   try {
-    const { all, published = false, page = 1, limit = 10 } = req.query;
+    const { all, published, page = 1, limit = 10 } = req.query;
     const parsedPage = parseInt(page);
     const parsedLimit = parseInt(limit);
     const startIndex = (parsedPage - 1) * parsedLimit;
 
     let query = {};
+
+    // Add filter for published status if specified
     if (published === "true") {
       query.published = true;
+    } else if (published === "false") {
+      query.published = false;
     }
+    // If published is not specified, query remains empty, returning all products
 
     if (all === "true") {
-      const products = await Product.find();
+      const products = await Product.find(query);
       return res.status(200).json(products);
     }
 
