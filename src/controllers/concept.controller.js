@@ -16,11 +16,10 @@ const getAllConcepts = async (req, res) => {
 
       const totalConcepts = await Concept.countDocuments();
 
-      const concepts = await Concept.find()
+      const concepts = await Concept.find({ published: true })
         .populate("roomType")
         .populate("roomStyle")
         .populate("products")
-        .populate("published")
         .skip(startIndex)
         .limit(limit);
 
