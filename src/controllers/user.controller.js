@@ -122,4 +122,4 @@ const updateUser = async (req, res) => {
   }
 };
 
-export { getAllUsers, getUserById };
+export { getAllUsers, getUserById, createUser, updateUser };
