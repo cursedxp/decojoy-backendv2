@@ -27,6 +27,16 @@ const userSchema = new Schema({
     type: [String],
     default: [],
   },
+  role: {
+    type: String,
+    enum: ["user", "admin", "partner"],
+    default: "user",
+  },
+  status: {
+    type: String,
+    enum: ["active", "inactive", "suspended"],
+    default: "active",
+  },
 });
 
 const User = model("User", userSchema);
