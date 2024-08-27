@@ -114,8 +114,6 @@ const createConcept = async (req, res) => {
       products: [],
     });
 
-    console.log("New Concept:", newConcept);
-
     res.status(201).json(newConcept);
   } catch (error) {
     console.error("Error creating concept:", error);
