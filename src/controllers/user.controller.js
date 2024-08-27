@@ -1,6 +1,6 @@
 import { User } from "../models/index.js";
 import mongoose from "mongoose";
-import argon2 from "../config/index.js";
+import argon2 from "argon2";
 
 const getAllUsers = async (req, res) => {
   try {
