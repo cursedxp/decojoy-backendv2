@@ -3,6 +3,9 @@ import { userController } from "../controllers/index.js";
 
 const router = Router();
 
+//login user
+router.post("/login", userController.loginUser);
+
 // Get all users
 router.get("/", userController.getAllUsers);
 
