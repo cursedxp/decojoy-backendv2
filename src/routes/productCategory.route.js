@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { productCategoryController } from "../controllers/index.js";
-
+import auth from "../middlewares/auth.js";
 const router = Router();
 // Get all product categories
 router.get("/", productCategoryController.getAllProductCategories);
