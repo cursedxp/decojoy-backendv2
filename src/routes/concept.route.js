@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { conceptController } from "../controllers/index.js";
 import auth from "../middlewares/auth.js";
+import roleAuth from "../middlewares/roleAuth.js";
 const router = Router();
 
 //Get all concepts
@@ -10,18 +11,24 @@ router.get("/", conceptController.getAllConcepts);
 router.get("/:id", conceptController.getConceptById);
 
 //Create a concept
-router.post("/", auth, conceptController.createConcept);
+router.post("/", auth, roleAuth(["admin"]), conceptController.createConcept);
 
 //Update a concept
-router.put("/:id", auth, conceptController.updateConcept);
+router.put("/:id", auth, roleAuth(["admin"]), conceptController.updateConcept);
 
 //Delete a concept
-router.delete("/:id", auth, conceptController.deleteConcept);
+router.delete(
+  "/:id",
+  auth,
+  roleAuth(["admin"]),
+  conceptController.deleteConcept
+);
 
 //Add product to concept
 router.post(
   "/:conceptId/products",
   auth,
+  roleAuth(["admin"]),
   conceptController.addProductToConcept
 );
 
@@ -29,6 +36,7 @@ router.post(
 router.delete(
   "/:conceptId/products",
   auth,
+  roleAuth(["admin"]),
   conceptController.removeProductFromConcept
 );
 
