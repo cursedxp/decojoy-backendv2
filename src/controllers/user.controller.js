@@ -23,14 +23,14 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid password" });
     }
 
-    //create payload with user id and email
-    const payload = { id: user._id, email: user.email };
+    //create payload with user id
+    const payload = { id: user._id };
 
     //generate jwt token
     const token = jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: "45m" },
+      { expiresIn: "45" },
       (err, token) => {
         if (err) throw err;
         return res.status(200).json({ token });
