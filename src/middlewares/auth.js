@@ -13,9 +13,8 @@ const auth = async (req, res, next) => {
     // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Set the user ID and email on the request object
+    // Set the user ID
     req.userId = decoded.id;
-    req.userEmail = decoded.email;
 
     // Fetch the user from the database to get the role
     const user = await User.findById(decoded.id);
