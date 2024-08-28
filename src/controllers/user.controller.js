@@ -1,7 +1,48 @@
 import { User } from "../models/index.js";
+import { jwt } from "../config/index.js";
 import mongoose from "mongoose";
 import argon2 from "argon2";
 
+//login user
+
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    //check if user exists
+    const user = await User.findOne({ email });
+
+    //if user does not exist, return a 404 error
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    //check if password is correct
+    const isMatch = await argon2.verify(user.password, password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    //create payload with user id and email
+    const payload = { id: user._id, email: user.email };
+
+    //generate jwt token
+    const token = jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: "45m" },
+      (err, token) => {
+        if (err) throw err;
+        return res.status(200).json({ token });
+      }
+    );
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get all users
 const getAllUsers = async (req, res) => {
   try {
     // Parse query parameters
@@ -17,6 +58,7 @@ const getAllUsers = async (req, res) => {
       const users = await User.find(query);
       return res.status(200).json(users);
     }
+
     // Count total number of users matching the query
     const totalUsers = await User.countDocuments(query);
 
@@ -122,4 +164,4 @@ const updateUser = async (req, res) => {
   }
 };
 
-export { getAllUsers, getUserById, createUser, updateUser };
+export { getAllUsers, getUserById, createUser, updateUser, loginUser };
