@@ -42,6 +42,18 @@ const loginUser = async (req, res) => {
   }
 };
 
+// Get current user
+const getCurrentUser = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error getting current user:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
 // Get all users
 const getAllUsers = async (req, res) => {
   try {
@@ -164,4 +176,11 @@ const updateUser = async (req, res) => {
   }
 };
 
-export { getAllUsers, getUserById, createUser, updateUser, loginUser };
+export {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  loginUser,
+  getCurrentUser,
+};

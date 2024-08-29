@@ -8,6 +8,9 @@ const router = Router();
 //login user
 router.post("/signin", userController.loginUser);
 
+// Get current user
+router.get("/current", auth, userController.getCurrentUser);
+
 // Get all users
 router.get("/", auth, roleAuth(["admin"]), userController.getAllUsers);
 
