@@ -29,7 +29,14 @@ const auth = async (req, res, next) => {
     // Log the error for debugging
     console.error("Token verification failed:", error);
 
-    // If the token is not valid, return a 401 error
+    // If the token is expired, return a specific message
+    if (error.name === "TokenExpiredError") {
+      return res
+        .status(401)
+        .json({ message: "Token has expired", error: error.message });
+    }
+
+    // For other token-related errors, return a generic message
     res
       .status(401)
       .json({ message: "Token is not valid", error: error.message });
