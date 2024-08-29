@@ -30,7 +30,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: "45" },
+      { expiresIn: "1h" },
       (err, token) => {
         if (err) throw err;
         return res.status(200).json({ token });
@@ -44,10 +44,9 @@ const loginUser = async (req, res) => {
 
 // Get current user
 const getCurrentUser = async (req, res) => {
+  const userId = req.userId;
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(userId);
     return res.status(200).json(user);
   } catch (error) {
     console.error("Error getting current user:", error);
