@@ -6,8 +6,9 @@ const auth = async (req, res, next) => {
   const token = req.header("Authorization")?.split(" ")[1];
 
   // Check if the token exists
-  if (!token)
+  if (!token) {
     return res.status(401).json({ message: "No token, authorization denied" });
+  }
 
   try {
     // Verify the token
