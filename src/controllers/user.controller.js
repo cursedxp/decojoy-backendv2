@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import argon2 from "argon2";
 
 //login user
-
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -13,15 +12,11 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     //if user does not exist, return a 404 error
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     //check if password is correct
     const isMatch = await argon2.verify(user.password, password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid password" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "Invalid password" });
 
     //create payload with user id
     const payload = { id: user._id };
@@ -47,6 +42,7 @@ const getCurrentUser = async (req, res) => {
   const userId = req.userId;
   try {
     const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
     return res.status(200).json(user);
   } catch (error) {
     console.error("Error getting current user:", error);
