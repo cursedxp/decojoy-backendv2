@@ -20,3 +20,6 @@ const startServer = async () => {
 };
 
 startServer();
+
+// Export the app for Vercel
+export default app;
