@@ -24,12 +24,34 @@ const userSchema = new Schema({
     default: [],
   },
   likes: {
-    type: [String],
-    default: [],
+    products: [
+      {
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+        },
+        likedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    concepts: [
+      {
+        concept: {
+          type: Schema.Types.ObjectId,
+          ref: "Concept",
+        },
+        likedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   role: {
     type: String,
-    enum: ["user", "admin", "partner"],
+    enum: ["user", "admin", "proUser"],
     default: "user",
   },
   status: {
