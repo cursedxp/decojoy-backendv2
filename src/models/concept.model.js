@@ -23,7 +23,7 @@ const conceptSchema = new Schema(
       type: [String],
       required: true,
     },
-    like: {
+    totalLikes: {
       type: Number,
       default: 0,
     },
@@ -47,6 +47,7 @@ const conceptSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    likedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );
