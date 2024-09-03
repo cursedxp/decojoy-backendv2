@@ -1,4 +1,4 @@
-import { User } from "../models/index.js";
+import { User, Product } from "../models/index.js";
 import { jwt } from "../config/index.js";
 import mongoose from "mongoose";
 import argon2 from "argon2";
@@ -171,6 +171,39 @@ const updateUser = async (req, res) => {
   }
 };
 
+//Like a product
+const likeProduct = async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+
+    const user = await User.findById(userId);
+    const product = await Product.findById(productId);
+
+    if (!user || !product) {
+      return res.status(404).json({ message: "User or product not found" });
+    }
+
+    // Check if the product is already liked
+    const productIndex = user.likes.products.findIndex(
+      (like) => like.product.toString() === productId
+    );
+
+    if (productIndex !== -1) {
+      // Product is already liked, so unlike it
+      user.likes.products.splice(productIndex, 1);
+      await user.save();
+      return res.status(200).json({ message: "Product unliked" });
+    } else {
+      // Product is not liked, so like it
+      user.likes.products.push({ product: productId });
+      await user.save();
+      return res.status(200).json({ message: "Product liked" });
+    }
+  } catch (error) {
+    console.error("Error liking/unliking product:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
 export {
   getAllUsers,
   getUserById,
@@ -178,4 +211,5 @@ export {
   updateUser,
   loginUser,
   getCurrentUser,
+  likeProduct,
 };
