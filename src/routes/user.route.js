@@ -23,4 +23,7 @@ router.post("/", userController.createUser);
 // Update a user
 router.put("/:id", auth, userController.updateUser);
 
+// Like a product
+router.post("/like/:productId", auth, userController.likeProduct);
+
 export default router;
