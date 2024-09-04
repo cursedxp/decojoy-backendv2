@@ -24,6 +24,12 @@ router.post("/", userController.createUser);
 router.put("/:id", auth, userController.updateUser);
 
 // Like a product
-router.post("/like/:productId", auth, userController.likeProduct);
+router.post("/like", auth, userController.likeProduct);
+
+// Unlike a product
+router.post("/unlike", auth, userController.unlikeProduct);
+
+// Check if a user has liked a product
+router.post("/hasLiked", auth, userController.hasLikedProduct);
 
 export default router;
