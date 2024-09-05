@@ -43,7 +43,13 @@ const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
-    return res.status(200).json(user);
+    return res.status(200).json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      profilePicture: user.profilePicture,
+      role: user.role,
+    });
   } catch (error) {
     console.error("Error getting current user:", error);
     res.status(500).json({ message: error.message });
