@@ -3,7 +3,7 @@ import { User } from "../models/index.js";
 
 const auth = async (req, res, next) => {
   // Extract the token from the Authorization header
-  const token = req.header("Authorization")?.split(" ")[1];
+  const token = req.cookies.auth;
 
   // Check if the token exists
   if (!token) {

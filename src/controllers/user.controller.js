@@ -8,29 +8,25 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    //check if user exists
     const user = await User.findOne({ email });
-
-    //if user does not exist, return a 404 error
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    //check if password is correct
     const isMatch = await argon2.verify(user.password, password);
     if (!isMatch) return res.status(400).json({ message: "Invalid password" });
 
-    //create payload with user id
     const payload = { id: user._id };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
-    //generate jwt token
-    const token = jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" },
-      (err, token) => {
-        if (err) throw err;
-        return res.status(200).json({ token });
-      }
-    );
+    res.cookie("auth", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax", // Changed from 'strict' to 'lax'
+      maxAge: 3600000, // 1 hour
+    });
+
+    return res.status(200).json({ message: "User logged in successfully" });
   } catch (error) {
     console.error("Error logging in user:", error);
     res.status(500).json({ message: error.message });

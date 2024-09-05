@@ -32,4 +32,10 @@ router.post("/unlike", auth, userController.unlikeProduct);
 // Check if a user has liked a product
 router.post("/hasLiked", auth, userController.hasLikedProduct);
 
+// Sign out user
+router.post("/signout", (req, res) => {
+  res.clearCookie("auth");
+  res.status(200).json({ message: "Logged out successfully" });
+});
+
 export default router;
