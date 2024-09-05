@@ -128,14 +128,18 @@ const createUser = async (req, res) => {
     const hashedPassword = await argon2.hash(password);
 
     //Create a new user
-    const newUser = User.create({
+    const newUser = await User.create({
       name,
       email,
       password: hashedPassword,
     });
-
+    if (!newUser) {
+      return res.status(400).json({ message: "Failed to create user" });
+    }
     //Return the new user
-    return res.status(201).json(newUser);
+    return res
+      .status(201)
+      .json({ status: "success", message: "User created successfully" });
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ message: error.message });
