@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import argon2 from "argon2";
 
 //login user
-const loginUser = async (req, res) => {
+const signInUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -26,31 +26,23 @@ const loginUser = async (req, res) => {
       maxAge: 3600000, // 1 hour
     });
 
-    return res.status(200).json({ message: "User logged in successfully" });
+    return res.status(200).json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        profilePicture: user.profilePicture || null,
+        role: user.role,
+      },
+      status: "success",
+      message: "User logged in successfully",
+    });
   } catch (error) {
     console.error("Error logging in user:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get current user
-const getCurrentUser = async (req, res) => {
-  const userId = req.userId;
-  try {
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    return res.status(200).json({
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      profilePicture: user.profilePicture,
-      role: user.role,
-    });
-  } catch (error) {
-    console.error("Error getting current user:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
 // Get all users
 const getAllUsers = async (req, res) => {
   try {
@@ -92,20 +84,40 @@ const getAllUsers = async (req, res) => {
 };
 // Get a user by id
 const getUserById = async (req, res) => {
-  // Get the user id from the request parameters
-  const { id } = req.params;
-  // Check if the user id is valid
+  const id = req.userId;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ message: "User not found." });
   }
-  // Find the user by id
-  const user = await User.findById(id);
-  // If the user is not found, return a 404 error
-  if (!user) {
-    return res.status(404).json({ message: "User not found." });
+  try {
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    return res.status(200).json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        profilePicture: user.profilePicture,
+        role: user.role,
+      },
+      status: "success",
+    });
+  } catch (error) {
+    console.error("Error getting current user:", error);
+    res.status(500).json({ message: error.message });
   }
-  // Return the user
-  return res.status(200).json(user);
+};
+
+//Get user's likes
+const getUserLikes = async (req, res) => {
+  const userId = req.userId; // Get userId from the request object, set by the middleware
+  try {
+    const user = await User.findById(userId);
+    console.log(user.likes);
+    return res.status(200).json(user.likes);
+  } catch (error) {
+    console.error("Error getting user's likes:", error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 //Create a new user
@@ -133,9 +145,15 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: "Failed to create user" });
     }
     //Return the new user
-    return res
-      .status(201)
-      .json({ status: "success", message: "User created successfully" });
+    return res.status(201).json({
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+      },
+      status: "success",
+    });
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ message: error.message });
@@ -145,7 +163,7 @@ const createUser = async (req, res) => {
 //Update a user
 const updateUser = async (req, res) => {
   try {
-    const { id } = req.params;
+    const userId = req.userId;
     const { name, email, password, profilePicture } = req.body;
 
     //Check if the user id is valid
@@ -322,9 +340,9 @@ export {
   getUserById,
   createUser,
   updateUser,
-  loginUser,
-  getCurrentUser,
+  signInUser,
   likeProduct,
   unlikeProduct,
   hasLikedProduct,
+  getUserLikes,
 };
