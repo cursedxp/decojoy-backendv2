@@ -85,22 +85,25 @@ const getAllUsers = async (req, res) => {
 // Get a user by id
 const getUserById = async (req, res) => {
   const id = req.userId;
+  const allowedRole = req.allowedRole;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ message: "User not found." });
   }
   try {
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: "User not found" });
-    return res.status(200).json({
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        profilePicture: user.profilePicture,
-        role: user.role,
-      },
-      status: "success",
-    });
+    if (allowedRole !== "admin") {
+      return res.status(200).json({
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          profilePicture: user.profilePicture,
+        },
+        status: "success",
+      });
+    }
+    return res.status(200).json({ user, status: "success" });
   } catch (error) {
     console.error("Error getting current user:", error);
     res.status(500).json({ message: error.message });
