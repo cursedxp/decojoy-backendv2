@@ -112,7 +112,6 @@ const getUserById = async (req, res) => {
 //Get user's likes
 const getUsersLikes = async (req, res) => {
   const userId = req.userId;
-  console.log("getUsersLikes userId:", userId);
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "User not found" });
   }
@@ -121,7 +120,6 @@ const getUsersLikes = async (req, res) => {
     const user = await User.findById(userId)
       .populate("likes.products")
       .populate("likes.concepts");
-    console.log("user likes:", user.likes);
     return res.status(200).json({ likes: user.likes, status: "success" });
   } catch (error) {
     console.error("Error getting user's likes:", error);
