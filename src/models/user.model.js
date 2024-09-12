@@ -29,10 +29,8 @@ const userSchema = new Schema(
     likes: {
       products: [
         {
-          product: {
-            type: Schema.Types.ObjectId,
-            ref: "Product",
-          },
+          type: Schema.Types.ObjectId,
+          ref: "Product",
           likedAt: {
             type: Date,
             default: Date.now,
@@ -41,10 +39,8 @@ const userSchema = new Schema(
       ],
       concepts: [
         {
-          concept: {
-            type: Schema.Types.ObjectId,
-            ref: "Concept",
-          },
+          type: Schema.Types.ObjectId,
+          ref: "Concept",
           likedAt: {
             type: Date,
             default: Date.now,

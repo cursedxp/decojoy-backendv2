@@ -111,14 +111,19 @@ const getUserById = async (req, res) => {
 
 //Get user's likes
 const getUserLikes = async (req, res) => {
-  const userId = req.userId; // Get userId from the request object, set by the middleware
+  const userId = req.userId;
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "User not found" });
+  }
+
   try {
-    const user = await User.findById(userId);
-    console.log(user.likes);
-    return res.status(200).json(user.likes);
+    const user = await User.findById(userId)
+      .populate("likes.products")
+      .populate("likes.concepts");
+    return res.status(200).json({ likes: user.likes, status: "success" });
   } catch (error) {
     console.error("Error getting user's likes:", error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message, status: "error" });
   }
 };
 
@@ -217,7 +222,7 @@ const likeProduct = async (req, res) => {
       {
         $addToSet: {
           "likes.products": {
-            product: productId,
+            type: productId,
             likedAt: new Date(),
           },
         },
@@ -282,7 +287,7 @@ const unlikeProduct = async (req, res) => {
     //Update the user's liked products
     const userUpdate = await User.updateOne(
       { _id: userId },
-      { $pull: { "likes.products": { product: productId } } },
+      { $pull: { "likes.products": { type: productId } } },
       { session }
     );
 
@@ -329,7 +334,7 @@ const hasLikedProduct = async (req, res) => {
   try {
     const user = await User.findById(userId);
     const hasLiked = user.likes.products.some(
-      (like) => like.product.toString() === productId
+      (like) => like.type.toString() === productId
     );
     return res.status(200).json({ hasLiked });
   } catch (error) {
