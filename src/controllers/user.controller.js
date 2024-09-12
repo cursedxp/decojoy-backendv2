@@ -218,12 +218,7 @@ const likeProduct = async (req, res) => {
   const { productId } = req.body;
   const userId = req.userId;
 
-  console.log(
-    `Attempting to like product. UserId: ${userId}, ProductId: ${productId}`
-  );
-
   if (!mongoose.Types.ObjectId.isValid(productId)) {
-    console.log(`Invalid productId: ${productId}`);
     return res.status(400).json({ message: "Invalid productId" });
   }
 
@@ -231,14 +226,12 @@ const likeProduct = async (req, res) => {
   session.startTransaction();
 
   try {
-    console.log("Checking if user has already liked the product");
     const user = await User.findOne({
       _id: userId,
       "likes.products": productId,
     });
 
     if (user) {
-      console.log("User has already liked the product");
       await session.abortTransaction();
       session.endSession();
       return res
@@ -246,7 +239,6 @@ const likeProduct = async (req, res) => {
         .json({ message: "User has already liked the product" });
     }
 
-    console.log("Updating user document");
     const userUpdateResult = await User.updateOne(
       { _id: userId },
       {
@@ -256,9 +248,6 @@ const likeProduct = async (req, res) => {
       },
       { session }
     );
-    console.log("User update result:", userUpdateResult);
-
-    console.log("Updating product document");
     const productUpdateResult = await Product.updateOne(
       { _id: productId },
       {
@@ -267,11 +256,9 @@ const likeProduct = async (req, res) => {
       },
       { session }
     );
-    console.log("Product update result:", productUpdateResult);
 
     await session.commitTransaction();
     session.endSession();
-    console.log("Transaction committed successfully");
 
     return res.status(200).json({ message: "Product liked successfully" });
   } catch (error) {
@@ -288,15 +275,10 @@ const unlikeProduct = async (req, res) => {
   const { productId } = req.body;
   const userId = req.userId;
 
-  console.log(
-    `Attempting to unlike product. UserId: ${userId}, ProductId: ${productId}`
-  );
-
   if (
     !mongoose.Types.ObjectId.isValid(productId) ||
     !mongoose.Types.ObjectId.isValid(userId)
   ) {
-    console.log(`Invalid productId: ${productId} or userId: ${userId}`);
     return res.status(400).json({ message: "Invalid productId or userId" });
   }
 
@@ -304,14 +286,12 @@ const unlikeProduct = async (req, res) => {
   session.startTransaction();
 
   try {
-    console.log("Checking if user has liked the product");
     const user = await User.findOne({
       _id: userId,
       "likes.products": productId,
     });
 
     if (!user) {
-      console.log("User has not liked the product");
       await session.abortTransaction();
       session.endSession();
       return res
@@ -319,15 +299,12 @@ const unlikeProduct = async (req, res) => {
         .json({ message: "User has not liked the product" });
     }
 
-    console.log("Updating user document");
     const userUpdateResult = await User.updateOne(
       { _id: userId },
       { $pull: { "likes.products": new mongoose.Types.ObjectId(productId) } },
       { session }
     );
-    console.log("User update result:", userUpdateResult);
 
-    console.log("Updating product document");
     const productUpdateResult = await Product.updateOne(
       { _id: productId },
       {
@@ -336,11 +313,9 @@ const unlikeProduct = async (req, res) => {
       },
       { session }
     );
-    console.log("Product update result:", productUpdateResult);
 
     await session.commitTransaction();
     session.endSession();
-    console.log("Transaction committed successfully");
 
     return res.status(200).json({ message: "Product unliked successfully" });
   } catch (error) {
