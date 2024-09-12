@@ -18,7 +18,7 @@ router.get("/:id", auth, userController.getUserById);
 router.post("/", userController.createUser);
 
 // Get user's likes
-router.get("/:id/likes", auth, userController.getUserLikes);
+router.get("/:id/likes", auth, userController.getUsersLikes);
 
 // Update a user
 router.put("/:id", auth, userController.updateUser);
