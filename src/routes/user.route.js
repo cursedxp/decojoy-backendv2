@@ -23,15 +23,6 @@ router.get("/:id/likes", auth, userController.getUsersLikes);
 // Update a user
 router.put("/:id", auth, userController.updateUser);
 
-// Like a product
-router.post("/like", auth, userController.likeProduct);
-
-// Unlike a product
-router.post("/unlike", auth, userController.unlikeProduct);
-
-// Check if a user has liked a product
-router.post("/hasLiked", auth, userController.hasLikedProduct);
-
 // Sign out user
 router.post("/signout", (req, res) => {
   res.clearCookie("auth");
