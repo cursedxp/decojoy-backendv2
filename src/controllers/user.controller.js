@@ -328,32 +328,11 @@ const unlikeProduct = async (req, res) => {
   }
 };
 
-//check if a user has liked a product
-const hasLikedProduct = async (req, res) => {
-  const { productId } = req.body;
-  const userId = req.userId;
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const hasLiked = user.likes.products.some(
-      (likedProductId) => likedProductId.toString() === productId
-    );
-    return res.status(200).json({ hasLiked });
-  } catch (error) {
-    console.error("Error checking if user has liked product:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
 export {
   getAllUsers,
   getUserById,
   createUser,
   updateUser,
   signInUser,
-  likeProduct,
-  unlikeProduct,
-  hasLikedProduct,
   getUsersLikes,
 };
