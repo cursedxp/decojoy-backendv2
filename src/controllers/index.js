@@ -4,6 +4,7 @@ import * as conceptController from "./concept.controller.js";
 import * as productController from "./product.controller.js";
 import * as productCategoryController from "./productCategory.controller.js";
 import * as userController from "./user.controller.js";
+import * as likeController from "./like.controller.js";
 export {
   roomController,
   styleController,
@@ -11,4 +12,5 @@ export {
   productController,
   productCategoryController,
   userController,
+  likeController,
 };
