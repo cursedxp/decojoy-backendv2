@@ -22,6 +22,14 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
+    bio: {
+      type: String,
+      default: "",
+    },
+    displayName: {
+      type: String,
+      default: "",
+    },
     concepts: {
       type: [String],
       default: [],
