@@ -98,6 +98,8 @@ const getUserById = async (req, res) => {
           name: user.name,
           email: user.email,
           profilePicture: user.profilePicture,
+          displayName: user.displayName,
+          bio: user.bio,
         },
         status: "success",
       });
