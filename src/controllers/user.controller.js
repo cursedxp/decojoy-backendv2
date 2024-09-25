@@ -32,6 +32,8 @@ const signInUser = async (req, res) => {
         name: user.name,
         email: user.email,
         profilePicture: user.profilePicture || null,
+        displayName: user.displayName || null,
+        bio: user.bio || null,
       },
       status: "success",
       message: "User logged in successfully",
